@@ -1,0 +1,263 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model CarQueryAPI {
+  model_id                    Int      @id @default(autoincrement())
+  model_make_id               String   @db.VarChar(32)
+  model_name                  String   @db.VarChar(64)
+  model_trim                  String   @db.VarChar(64)
+  model_year                  Int
+  model_body                  String?  @db.VarChar(64)
+  model_engine_position       String?  @db.VarChar(8)
+  model_engine_cc             Int?
+  model_engine_cyl            Int?
+  model_engine_type           String?  @db.VarChar(32)
+  model_engine_valves_per_cyl Int?
+  model_engine_power_ps       Int?
+  model_engine_power_rpm      Int?
+  model_engine_torque_nm      Int?
+  model_engine_torque_rpm     Int?
+  model_engine_bore_mm        Decimal? @db.Decimal(6, 1)
+  model_engine_stroke_mm      Decimal? @db.Decimal(6, 1)
+  model_engine_compression    String?  @db.VarChar(8)
+  model_engine_fuel           String?  @db.VarChar(32)
+  model_top_speed_kph         Int?
+  model_0_to_100_kph          Decimal? @db.Decimal(4, 1)
+  model_drive                 String?  @db.VarChar(16)
+  model_transmission_type     String?  @db.VarChar(32)
+  model_seats                 Int?
+  model_doors                 Int?
+  model_weight_kg             Int?
+  model_length_mm             Int?
+  model_width_mm              Int?
+  model_height_mm             Int?
+  model_wheelbase_mm          Int?
+  model_lkm_hwy               Decimal? @db.Decimal(4, 1)
+  model_lkm_mixed             Decimal? @db.Decimal(4, 1)
+  model_lkm_city              Decimal? @db.Decimal(4, 1)
+  model_fuel_cap_l            Int?
+  model_sold_in_us            Int?     @db.TinyInt
+  model_co2                   Int?
+  model_make_display          String?  @db.VarChar(32)
+
+  @@index([model_body], map: "model_body")
+  @@index([model_drive], map: "model_drive")
+  @@index([model_engine_fuel], map: "model_engine_fuel")
+  @@index([model_engine_position], map: "model_engine_position")
+  @@index([model_make_id], map: "model_make_id")
+  @@index([model_name], map: "model_name")
+  @@index([model_sold_in_us], map: "model_sold_in_us")
+  @@index([model_trim], map: "model_trim")
+  @@index([model_year], map: "model_year")
+}
+
+model sessions {
+  session_id String  @id @db.VarChar(128)
+  expires    Int     @db.UnsignedInt
+  data       String? @db.MediumText
+}
+
+model user {
+  user_id      Int            @id @default(autoincrement())
+  email        String         @db.VarChar(100)
+  password     String         @db.Text
+  first_name   String         @db.VarChar(100)
+  last_name    String         @db.VarChar(100)
+  phone_number String?        @db.VarChar(50)
+  is_admin     Boolean?       @default(dbgenerated("b'0'")) @db.Bit(1)
+  created_at   DateTime?      @db.Timestamp(0)
+  modified_at  DateTime?      @db.Timestamp(0)
+  user_address user_address[]
+}
+
+model user_address {
+  user_address_id Int       @id @default(autoincrement())
+  user_id         Int
+  address_line1   String    @db.VarChar(100)
+  address_line2   String?   @db.VarChar(100)
+  city            String    @db.VarChar(50)
+  state           String    @db.VarChar(50)
+  postal_code     String    @db.VarChar(50)
+  country         String    @db.VarChar(50)
+  phone_number    String    @db.VarChar(50)
+  created_at      DateTime? @db.Timestamp(0)
+  modified_at     DateTime? @db.Timestamp(0)
+  user            user      @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "user_address_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model brand {
+  brand_id    Int        @id @default(autoincrement()) @db.MediumInt
+  name        String     @db.VarChar(30)
+  slug        String     @db.VarChar(30)
+  country     String     @db.VarChar(5)
+  image       String     @db.VarChar(100)
+  created_at  DateTime   @db.Timestamp(0)
+  modified_at DateTime   @db.Timestamp(0)
+  category    category[]
+  product     product[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model XKGLOW_product_file {
+  Vendor_Name                                 String?  @db.VarChar(6)
+  Part_Number                                 String?  @db.VarChar(19)
+  Category                                    String?  @db.VarChar(16)
+  Desc_LONG_80_CHARACTER                      String?  @db.VarChar(125)
+  Desc_SHORT_18_CHARACTER                     String?  @db.VarChar(29)
+  MSRP                                        Decimal? @db.Decimal(6, 2)
+  MAP                                         Decimal? @db.Decimal(6, 2)
+  Price_Tier_1_20_off_MSRP_750_Initial_Order  Decimal? @db.Decimal(6, 2)
+  Price_Tier_2_30_off_MSRP_1500_Initial_Order Decimal? @db.Decimal(6, 2)
+  Price_Tier_3_40_off_MSRP_4000_Initial_Order Decimal? @db.Decimal(6, 2)
+  Price_Tier_4_50_off_MSRP_8000_Initial_Order Decimal? @db.Decimal(6, 2)
+  Case_Qty                                    Int?
+  WEIGHT_lb                                   Decimal? @db.Decimal(5, 3)
+  DIM_H_in                                    Decimal? @db.Decimal(5, 3)
+  DIM_L_in                                    Decimal? @db.Decimal(5, 3)
+  DIN_W_in                                    Decimal? @db.Decimal(5, 3)
+  Country_of_Origin                           String?  @db.VarChar(5)
+  Website_link                                String?  @db.VarChar(200)
+  Photo_Download                              String?  @db.VarChar(84)
+  Video_Download                              String?  @db.VarChar(166)
+  Barcode                                     String?  @db.VarChar(11)
+  Instructions                                String?  @db.VarChar(99)
+  UPC_1                                       BigInt?
+  Warranty                                    String?  @db.VarChar(35)
+  xkglow_product_file_id                      Int      @id @default(autoincrement())
+
+  @@ignore
+}
+
+model badge {
+  badge_id    Int      @id @default(autoincrement()) @db.MediumInt
+  badge       String   @db.VarChar(4)
+  product_id  Int      @db.MediumInt
+  created_at  DateTime @db.Timestamp(0)
+  modified_at DateTime @db.Timestamp(0)
+  product     product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "badge_ibfk_1")
+
+  @@index([product_id], map: "product_id")
+}
+
+model category {
+  category_id       Int                 @id @default(autoincrement()) @db.MediumInt
+  name              String              @db.VarChar(30)
+  slug              String              @db.VarChar(30)
+  image             String              @db.VarChar(100)
+  created_at        DateTime            @db.Timestamp(0)
+  modified_at       DateTime            @db.Timestamp(0)
+  brand_id          Int                 @db.MediumInt
+  brand             brand               @relation(fields: [brand_id], references: [brand_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_brand_id")
+  category_children category_children[]
+  product           product[]
+
+  @@index([brand_id], map: "fk_brand_id")
+}
+
+model category_children {
+  category_children_id Int      @id @default(autoincrement()) @db.MediumInt
+  name                 String   @db.VarChar(30)
+  slug                 String   @db.VarChar(30)
+  category_id          Int      @db.MediumInt
+  created_at           DateTime @db.Timestamp(0)
+  modified_at          DateTime @db.Timestamp(0)
+  category             category @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "category_children_ibfk_1")
+
+  @@index([category_id], map: "category_id")
+}
+
+model compatibility {
+  compatibility_id Int      @id @default(autoincrement()) @db.MediumInt
+  product_id       Int      @db.MediumInt
+  compatibility    String   @db.VarChar(10)
+  created_at       DateTime @db.Timestamp(0)
+  modified_at      DateTime @db.Timestamp(0)
+  product          product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "compatibility_ibfk_1")
+
+  @@index([product_id], map: "product_id")
+}
+
+model option {
+  option_id    Int            @id @default(autoincrement()) @db.MediumInt
+  product_id   Int            @db.MediumInt
+  type         String         @db.VarChar(20)
+  slug         String         @db.VarChar(20)
+  name         String         @db.VarChar(20)
+  created_at   DateTime       @db.Timestamp(0)
+  modified_at  DateTime       @db.Timestamp(0)
+  product      product        @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "option_ibfk_1")
+  option_value option_value[]
+
+  @@index([product_id], map: "product_id")
+}
+
+model option_value {
+  option_value_id Int      @id @default(autoincrement()) @db.MediumInt
+  option_id       Int      @db.MediumInt
+  slug            String   @db.VarChar(20)
+  name            String   @db.VarChar(20)
+  created_at      DateTime @db.Timestamp(0)
+  modified_at     DateTime @db.Timestamp(0)
+  option          option   @relation(fields: [option_id], references: [option_id], onDelete: NoAction, onUpdate: NoAction, map: "option_value_ibfk_1")
+
+  @@index([option_id], map: "option_id")
+}
+
+model product {
+  product_id                 Int             @id @default(autoincrement()) @db.MediumInt
+  category_id                Int             @db.MediumInt
+  brand_id                   Int             @db.MediumInt
+  name                       String?         @db.VarChar(200)
+  slug                       String?         @db.VarChar(100)
+  sku                        String?         @db.VarChar(20)
+  part_number                String          @db.VarChar(30)
+  asset_url                  String?         @db.VarChar(100)
+  stock                      String          @db.VarChar(20)
+  msrp                       Int
+  price                      Int
+  compare_at_price           Int?
+  reviews                    Int?
+  availability               String?         @db.VarChar(15)
+  created_at                 DateTime        @db.Timestamp(0)
+  modified_at                DateTime        @db.Timestamp(0)
+  brand                      brand           @relation(fields: [brand_id], references: [brand_id], onDelete: NoAction, onUpdate: NoAction, map: "product_ibfk_2")
+  category_categoryToproduct category        @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction, map: "product_ibfk_1")
+  badge                      badge[]
+  compatibility              compatibility[]
+  option                     option[]
+  product_image              product_image[]
+  tag                        tag[]
+
+  @@index([brand_id], map: "brand_id")
+  @@index([category_id], map: "category_id")
+}
+
+model product_image {
+  product_image_id Int      @id @default(autoincrement()) @db.MediumInt
+  product_id       Int      @db.MediumInt
+  image            String   @db.VarChar(100)
+  created_at       DateTime @db.Timestamp(0)
+  modified_at      DateTime @db.Timestamp(0)
+  product          product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "product_image_ibfk_1")
+
+  @@index([product_id], map: "product_id")
+}
+
+model tag {
+  tag_id      Int      @id @default(autoincrement()) @db.MediumInt
+  product_id  Int      @db.MediumInt
+  tag         String   @db.VarChar(20)
+  created_at  DateTime @db.Timestamp(0)
+  modified_at DateTime @db.Timestamp(0)
+  product     product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "tag_ibfk_1")
+
+  @@index([product_id], map: "product_id")
+}
